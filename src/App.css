@@ -40,3 +40,39 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ── Wizard slide transitions ──────────────────────────────── */
+.wizard-viewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* Enough room so the absolute exit layer doesn't collapse the container */
+  min-height: 10rem;
+}
+
+.wizard-step {
+  width: 100%;
+}
+
+@keyframes slideInFromRight {
+  from { transform: translateX(110%); }
+  to   { transform: translateX(0);    }
+}
+
+@keyframes slideOutToLeft {
+  from { transform: translateX(0);     }
+  to   { transform: translateX(-110%); }
+}
+
+.slide-enter {
+  animation: slideInFromRight 0.4s ease-in-out forwards;
+}
+
+.slide-exit {
+  animation: slideOutToLeft 0.4s ease-in-out forwards;
+  /* Sit on top of the incoming step without displacing it */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
