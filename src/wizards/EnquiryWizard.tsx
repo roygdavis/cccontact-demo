@@ -32,7 +32,7 @@ export const EnquiryWizard = () => {
             id="description"
             className="form-control"
             placeholder="Type your enquiry here"
-            value={description}
+              value={description ?? ''}
             onChange={e => setDescription(e.target.value)}
           />
         </div>

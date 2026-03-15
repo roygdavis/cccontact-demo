@@ -28,7 +28,7 @@ export interface WizardContextValue {
   apiData: ApiOrderData | null;
   isLoading: boolean;
   error: string | null;
-  description: string;
+  description: string | null;
   setDescription: (v: string) => void;
 
   // ── Navigation ─────────────────────────────────────────────────────────────
