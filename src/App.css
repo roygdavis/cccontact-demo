@@ -1,53 +1,30 @@
+/* ── Root / Layout ─────────────────────────────────────────────────────────── */
+
 #root {
-  max-width: 1280px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 2rem 1rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* ── Back button ────────────────────────────────────────────────────────────── */
+
+.back-btn {
+  align-self: flex-start;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
+/* ── Wizard viewport & slide transitions ─────────────────────────────────────  */
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-/* ── Wizard slide transitions ──────────────────────────────── */
 .wizard-viewport {
   position: relative;
   overflow: hidden;
   width: 100%;
-  /* Enough room so the absolute exit layer doesn't collapse the container */
-  min-height: 10rem;
+  min-height: 12rem;
 }
 
 .wizard-step {
@@ -58,21 +35,186 @@
   from { transform: translateX(110%); }
   to   { transform: translateX(0);    }
 }
-
 @keyframes slideOutToLeft {
   from { transform: translateX(0);     }
   to   { transform: translateX(-110%); }
 }
-
-.slide-enter {
-  animation: slideInFromRight 0.4s ease-in-out forwards;
+@keyframes slideInFromLeft {
+  from { transform: translateX(-110%); }
+  to   { transform: translateX(0);     }
 }
+@keyframes slideOutToRight {
+  from { transform: translateX(0);    }
+  to   { transform: translateX(110%); }
+}
+
+.slide-enter      { animation: slideInFromRight 0.35s ease-in-out forwards; }
+.slide-enter-back { animation: slideInFromLeft  0.35s ease-in-out forwards; }
 
 .slide-exit {
-  animation: slideOutToLeft 0.4s ease-in-out forwards;
-  /* Sit on top of the incoming step without displacing it */
+  animation: slideOutToLeft 0.35s ease-in-out forwards;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100%;
 }
+.slide-exit-back {
+  animation: slideOutToRight 0.35s ease-in-out forwards;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+}
+
+/* ── Step card ──────────────────────────────────────────────────────────────── */
+
+.step-content {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: left;
+}
+
+.step-content h2 {
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Utility ────────────────────────────────────────────────────────────────── */
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* ── Options list ───────────────────────────────────────────────────────────── */
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.option-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.15s, border-color 0.15s;
+  color: black;
+}
+
+.option-btn:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+/* Enquiry options that navigate to an external page */
+.option-btn--link:hover {
+  background: #eef3ff;
+  border-color: #0d6efd;
+}
+
+.link-arrow {
+  color: #0d6efd;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+/* ── Order items list ───────────────────────────────────────────────────────── */
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  background: #fff;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.item-name {
+  font-weight: 500;
+}
+
+.item-qty {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* ── Tracking button ────────────────────────────────────────────────────────── */
+
+.tracking-btn {
+  display: inline-block;
+  margin-top: 0.75rem;
+}
+
+/* ── Success step ───────────────────────────────────────────────────────────── */
+
+.success-step {
+  text-align: center;
+}
+
+.success-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: #198754;
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+/* ── Confirmation dialog overlay ────────────────────────────────────────────── */
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.confirm-dialog {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.confirm-message {
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+}
+
