@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { WizardStep } from './Flows';
+import { WizardSteps, flattenSteps, type WizardStep, type FlatStep } from './Flows';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,6 +47,13 @@ export interface WizardContextValue {
   setConfirm: (config: ConfirmConfig | null) => void;
   /** Reset all state back to the initial split screen */
   reset: () => void;
+  /**
+   * Search the entire WizardSteps tree for the best match to a free-text query.
+   * Scores every node by how many of its label words appear in the query text.
+   * Returns the best-scoring FlatStep (which includes the ancestor path), or
+   * null if nothing scores above zero.
+   */
+  findStep: (query: string) => FlatStep | null;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -153,6 +160,40 @@ export function WizardProvider({ children, onNavigate, onReset }: WizardProvider
     }
   }, [email, orderNumber, navigateTo]);
 
+  // Flatten both root trees once — stable reference, no state needed.
+  const allSteps: FlatStep[] = [
+    ...flattenSteps(WizardSteps.orders),
+    ...flattenSteps(WizardSteps.enquiries),
+  ];
+
+  const findStep = useCallback((query: string): FlatStep | null => {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return null;
+
+    // Split the query into whole words so we can test containment word-by-word.
+    const needleWords = needle.split(/\s+/);
+
+    const scored = allSteps.map(flat => {
+      const labelWords = flat.step.label.toLowerCase().split(/\s+/);
+      // A label word scores a point only when it appears as a whole word in the
+      // query — avoids short words like "a", "or", "my" matching inside longer
+      // query words (e.g. "a" inside "payment").
+      const score = labelWords.filter(lw => needleWords.includes(lw)).length;
+      // Normalise by label length so a fully-matched short label doesn't beat a
+      // partially-matched longer one that is actually more specific.
+      const normalisedScore = score / labelWords.length;
+      return { flat, score, normalisedScore };
+    });
+
+    // Pick highest normalised score; on a tie prefer the higher raw word count.
+    const best = scored.reduce((a, b) => {
+      if (b.normalisedScore !== a.normalisedScore) return b.normalisedScore > a.normalisedScore ? b : a;
+      return b.score > a.score ? b : a;
+    });
+
+    return best.score > 0 ? best.flat : null;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps — allSteps is module-level stable
+
   // ── Value ─────────────────────────────────────────────────────────────────
 
   const value: WizardContextValue = {
@@ -169,7 +210,8 @@ export function WizardProvider({ children, onNavigate, onReset }: WizardProvider
     confirm, setConfirm,
     reset,
     description,
-    setDescription
+    setDescription,
+    findStep,
   };
 
   return (

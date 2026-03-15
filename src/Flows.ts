@@ -4,6 +4,7 @@ import { EnquiryWizard } from "./wizards/EnquiryWizard";
 import { OrderAmendmentWizard } from "./wizards/OrderAmendmentWizard";
 import { OrderLookupWizard } from "./wizards/OrderLookupWizard";
 import { OrderOptionsWizard } from "./wizards/OrderOptionsWizard";
+import { PaymentIssueStep } from "./wizards/PaymentIssueStep";
 import { StockEnquiryStep } from "./wizards/StockEnquiryStep";
 import { WismoWizard } from "./wizards/WismoWizaard";
 
@@ -24,6 +25,29 @@ export interface WizardStep {
   component: React.FunctionComponent;
   next?: WizardStep[],
   useChildren?: boolean; // notifier to the component that children exist and should/could be made use of
+}
+
+// ─── Tree utilities ───────────────────────────────────────────────────────────
+
+export interface FlatStep {
+  /** The step node itself */
+  step: WizardStep;
+  /** All ancestor steps from the root down to (but not including) this step */
+  path: WizardStep[];
+}
+
+/**
+ * Recursively flattens a WizardStep tree into a list of { step, path } entries
+ * so that matching logic can consider every node regardless of depth.
+ */
+export function flattenSteps(root: WizardStep, path: WizardStep[] = []): FlatStep[] {
+  const result: FlatStep[] = [{ step: root, path }];
+  if (root.next) {
+    for (const child of root.next) {
+      result.push(...flattenSteps(child, [...path, root]));
+    }
+  }
+  return result;
 }
 
 export const WizardSteps: Record<Categories, WizardStep> = {
@@ -51,7 +75,7 @@ export const WizardSteps: Record<Categories, WizardStep> = {
                 label: "Customer Care enquiry",
                 component: EnquiryWizard,
                 next: [{
-                  label: "I have a payment issue",
+                  label: "Enquiry submitted!",
                   component: EnquiryConfirmation,
                 }],
               },
@@ -67,7 +91,11 @@ export const WizardSteps: Record<Categories, WizardStep> = {
     useChildren: true,
     next: [{
       label: "I have a payment issue",
-      component: EnquiryConfirmation,
+      component: PaymentIssueStep,
+      next: [{
+        label: "Issue submitted",
+        component: EnquiryConfirmation,
+      }],
     }, {
       label: "Stock enquiry",
       component: StockEnquiryStep
