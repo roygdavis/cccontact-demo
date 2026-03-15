@@ -1,3 +1,11 @@
+import { DamagedItemsWizard } from "./wizards/DamagedItemsWizard";
+import { EnquiryConfirmation } from "./wizards/EnquiryConfirmation";
+import { EnquiryWizard } from "./wizards/EnquiryWizard";
+import { OrderAmendmentWizard } from "./wizards/OrderAmendmentWizard";
+import { OrderLookupWizard } from "./wizards/OrderLookupWizard";
+import { OrderOptionsWizard } from "./wizards/OrderOptionsWizard";
+import { StockEnquiryStep } from "./wizards/StockEnquiryStep";
+import { WismoWizard } from "./wizards/WismoWizaard";
 
 export interface FlowOption {
   label: string;
@@ -10,6 +18,63 @@ export interface FlowOption {
 }
 
 type Categories = "orders" | "enquiries";
+
+export interface WizardStep {
+  label: string;
+  component: React.FunctionComponent;
+  next?: WizardStep[],
+  useChildren?: boolean; // notifier to the component that children exist and should/could be made use of
+}
+
+export const WizardSteps: Record<Categories, WizardStep> = {
+  orders: {
+    label: "Let's look up your order",
+    component: OrderLookupWizard,
+    next: [
+      {
+        label: "What can we help you with?",
+        component: OrderOptionsWizard,
+        next: [
+          {
+            label: "Track my order",
+            component: WismoWizard,
+          },
+          {
+            label: "Damaged, missing, or faulty items",
+            component: DamagedItemsWizard,
+          },
+          {
+            label: "Order amendment",
+            component: OrderAmendmentWizard,
+            next: [
+              {
+                label: "Customer Care enquiry",
+                component: EnquiryWizard,
+                next: [{
+                  label: "I have a payment issue",
+                  component: EnquiryConfirmation,
+                }],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  enquiries: {
+    label: "How can we help you today?",
+    component: EnquiryWizard,
+    useChildren: true,
+    next: [{
+      label: "I have a payment issue",
+      component: EnquiryConfirmation,
+    }, {
+      label: "Stock enquiry",
+      component: StockEnquiryStep
+    }],
+  }
+}
+
 
 export const Flows: Record<Categories, FlowOption[]> = {
   orders: [
