@@ -1,0 +1,362 @@
+/* ==========================================================================
+   Wizard — component styles
+   All colours are driven by CSS custom properties so the wizard can be
+   re-themed by overriding them on any ancestor element.
+   ========================================================================== */
+
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --wizard-primary:         #6366f1;   /* indigo-500                          */
+  --wizard-primary-dark:    #4f46e5;   /* indigo-600, used on hover           */
+  --wizard-primary-glow:    rgba(99, 102, 241, 0.28);
+  --wizard-success:         #10b981;   /* emerald-500, finish button          */
+  --wizard-success-dark:    #059669;   /* emerald-600                         */
+  --wizard-error:           #ef4444;
+  --wizard-error-bg:        rgba(239, 68, 68, 0.08);
+  --wizard-muted:           #6b7280;
+  --wizard-divider:         rgba(0, 0, 0, 0.08);
+  --wizard-animation-duration: 350ms; /* fallback; overridden inline by Wizard */
+}
+
+/* ── Outer wrapper ─────────────────────────────────────────────────────────── */
+.wizard {
+  width: 100%;
+}
+
+/* ── Slide container ───────────────────────────────────────────────────────── */
+.wizard__slide-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Base slide — stays in normal flow to define container height */
+.wizard__slide {
+  width: 100%;
+}
+
+/* Exiting slide: absolute so it overlays without shrinking the container */
+.wizard__slide--exit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Enter animations ──────────────────────────────────────────────────────── */
+.wizard__slide--enter-forward {
+  animation: wizardSlideInRight var(--wizard-animation-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.wizard__slide--enter-backward {
+  animation: wizardSlideInLeft var(--wizard-animation-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ── Exit animations ───────────────────────────────────────────────────────── */
+.wizard__slide--exit-forward {
+  animation: wizardSlideOutLeft var(--wizard-animation-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.wizard__slide--exit-backward {
+  animation: wizardSlideOutRight var(--wizard-animation-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes wizardSlideInRight {
+  from { transform: translateX(56px);  opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes wizardSlideInLeft {
+  from { transform: translateX(-56px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes wizardSlideOutLeft {
+  from { transform: translateX(0);     opacity: 1; }
+  to   { transform: translateX(-56px); opacity: 0; }
+}
+
+@keyframes wizardSlideOutRight {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(56px); opacity: 0; }
+}
+
+/* ── Step wrapper ──────────────────────────────────────────────────────────── */
+.wizard-step {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+/* ── Progress bar ──────────────────────────────────────────────────────────── */
+.wizard-progress {
+  display: flex;
+  align-items: flex-start; /* top-align so labels sit below dots uniformly  */
+  justify-content: center;
+}
+
+/* ── Connector line between two bullets ────────────────────────────────────── */
+.wizard-progress__connector {
+  flex: 1;
+  max-width: 3rem;
+  height: 2px;
+  /* Vertically centred with the dot (dot is 12px tall, button has 4px padding) */
+  margin-top: 14px;
+  background-color: var(--wizard-primary);
+  opacity: 0.18;
+  border-radius: 1px;
+  transition: opacity 400ms ease;
+}
+
+.wizard-progress__connector--completed {
+  opacity: 0.55;
+}
+
+/* ── Bullet wrapper ─────────────────────────────────────────────────────────── */
+.wizard-progress__bullet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Reset <button> so only we style it */
+.wizard-progress__bullet-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  line-height: 0;
+  cursor: default;
+  transition: background 200ms ease;
+  outline-offset: 2px;
+}
+
+.wizard-progress__bullet-btn:not(:disabled) {
+  cursor: pointer;
+}
+
+.wizard-progress__bullet-btn:not(:disabled):hover {
+  background: var(--wizard-primary-glow);
+}
+
+.wizard-progress__bullet-btn:focus-visible {
+  outline: 2px solid var(--wizard-primary);
+}
+
+/* ── The dot ────────────────────────────────────────────────────────────────── */
+.wizard-progress__bullet-dot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--wizard-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    width      250ms ease,
+    height     250ms ease,
+    opacity    250ms ease,
+    box-shadow 250ms ease;
+}
+
+/* ── Bullet states ──────────────────────────────────────────────────────────── */
+
+/* Current */
+.wizard-progress__bullet--current .wizard-progress__bullet-dot {
+  width: 16px;
+  height: 16px;
+  opacity: 1;
+  box-shadow: 0 0 0 3px var(--wizard-primary-glow);
+}
+
+/* Completed */
+.wizard-progress__bullet--completed .wizard-progress__bullet-dot {
+  opacity: 0.72;
+}
+
+/* Upcoming */
+.wizard-progress__bullet--upcoming .wizard-progress__bullet-dot {
+  opacity: 0.2;
+}
+
+/* ── Pulsing ring on the current step ──────────────────────────────────────── */
+.wizard-progress__bullet-pulse {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid var(--wizard-primary);
+  opacity: 0.35;
+  animation: wizardBulletPulse 2s ease-in-out infinite;
+}
+
+@keyframes wizardBulletPulse {
+  0%,  100% { transform: scale(1);    opacity: 0.35; }
+  50%       { transform: scale(1.45); opacity: 0.05; }
+}
+
+/* ── Checkmark SVG inside completed dots ───────────────────────────────────── */
+.wizard-progress__checkmark {
+  width: 8px;
+  height: 8px;
+  color: #fff;
+}
+
+/* ── Step label beneath each bullet ────────────────────────────────────────── */
+.wizard-progress__label {
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--wizard-muted);
+  opacity: 0.38;
+  pointer-events: none;
+  transition: opacity 300ms ease, font-weight 200ms;
+}
+
+.wizard-progress__bullet--current   .wizard-progress__label { opacity: 1;    font-weight: 600; color: var(--wizard-primary); }
+.wizard-progress__bullet--completed .wizard-progress__label { opacity: 0.62; }
+
+/* ── Step header ────────────────────────────────────────────────────────────── */
+.wizard-step__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wizard-step__title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.wizard-step__description {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--wizard-muted);
+  line-height: 1.5;
+}
+
+/* ── Content area ───────────────────────────────────────────────────────────── */
+.wizard-step__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Error banner ───────────────────────────────────────────────────────────── */
+.wizard-step__error {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--wizard-error);
+  background: var(--wizard-error-bg);
+  border-left: 3px solid var(--wizard-error);
+  border-radius: 0.375rem;
+}
+
+/* ── Navigation bar ─────────────────────────────────────────────────────────── */
+.wizard-step__navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--wizard-divider);
+}
+
+.wizard-step__step-counter {
+  font-size: 0.75rem;
+  color: var(--wizard-muted);
+  opacity: 0.55;
+  white-space: nowrap;
+}
+
+/* ── Shared button base ─────────────────────────────────────────────────────── */
+.wizard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 180ms ease, color 180ms ease, opacity 180ms ease, box-shadow 180ms ease;
+}
+
+.wizard-btn:focus-visible {
+  outline: 2px solid var(--wizard-primary);
+  outline-offset: 2px;
+}
+
+.wizard-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+/* Back */
+.wizard-btn--back {
+  background: transparent;
+  color: var(--wizard-muted);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+}
+
+.wizard-btn--back:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Next */
+.wizard-btn--next {
+  background: var(--wizard-primary);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(99, 102, 241, 0.35);
+}
+
+.wizard-btn--next:not(:disabled):hover {
+  background: var(--wizard-primary-dark);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.45);
+}
+
+/* Finish (last step) */
+.wizard-btn--finish {
+  background: var(--wizard-success);
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.35);
+}
+
+.wizard-btn--finish:not(:disabled):hover {
+  background: var(--wizard-success-dark);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.45);
+}
+
+/* ── Reduced-motion overrides ───────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .wizard__slide--enter-forward,
+  .wizard__slide--enter-backward,
+  .wizard__slide--exit-forward,
+  .wizard__slide--exit-backward {
+    animation: none;
+  }
+
+  .wizard-progress__bullet-pulse {
+    animation: none;
+  }
+
+  .wizard-progress__bullet-dot,
+  .wizard-progress__connector,
+  .wizard-progress__label,
+  .wizard-btn {
+    transition: none;
+  }
+}

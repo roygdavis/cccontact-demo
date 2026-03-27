@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="cccontact-demo.client/cccontact-demo.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="cccontact-demo.Server/cccontact-demo.Server.csproj" />
+</Solution>
