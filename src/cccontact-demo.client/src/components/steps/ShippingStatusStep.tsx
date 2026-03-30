@@ -43,7 +43,8 @@ export function ShippingStatusStep() {
     return (
         <WizardStep
             title="Shipping Status"
-            validate={() => data.orderNumber.trim().length > 0 || 'Email is required'}
+            onContactCustomerCare={() => alert('reason: shipping status')}
+            contactCareVariant={randomShippingStatus === "Late" ? "button" : "link"}
         >
             {renderStatus()}
         </WizardStep>

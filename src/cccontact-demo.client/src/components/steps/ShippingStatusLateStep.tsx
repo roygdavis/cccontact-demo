@@ -1,5 +1,3 @@
-import { ContactUsCTABold } from "../ContactUsCTABold";
-
 export function ShippingStatusLateStep(props: {
     status: string,
     expectedDelivery: string,
@@ -23,10 +21,6 @@ export function ShippingStatusLateStep(props: {
                 <p className="text-start">Your order is late</p>
                 <p className="text-start">Your order should have arrived no later than Tuesday 24th March</p>
             </div>
-        </div>
-        <div>
-        <ContactUsCTABold />
-
         </div>
     </>);
 }

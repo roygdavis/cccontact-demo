@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import type { WismoData } from "../../pages/Wismo";
 import { useWizard, WizardStep } from "../Wizard";
+import { OrderValidationDetailsStep } from "./OrderValidationDetailsStep";
 
 export type OrderValidationType = {
     orderNumber: string;
@@ -13,22 +15,30 @@ export type OrderValidationType = {
  * certain actions are requested by the customer
  **/
 export function OrderValidationStep() {
-    const { data, updateData } = useWizard<WismoData>();
+    const { data } = useWizard<WismoData>();
+    const [validated, setValidated] = useState(false);
+
+    const handleNext = (): Promise<boolean> => {
+        if (data.orderNumber.trim().length === 0 || data.phoneEmailOrPostCode.trim().length === 0) {
+            return Promise.resolve("Cannot proceed: Order number and phone/email/post code are required" as unknown as boolean);
+        }
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                setValidated(true);
+                resolve(true);
+            }, 1000);
+        });
+    }
+
     return (
         <WizardStep
             title="Please provide your order details"
-            validate={() => data.orderNumber.trim().length > 0 || 'Order number is required'}
+            validate={handleNext}
+            onContactCustomerCare={() => alert('reason: wismo')}
+            contactCareVariant={validated ? "link" : "button"}
         >
-            <div className="mb-3">
-                <label htmlFor="orderNumberInput" className="form-label">Order number</label>
-                <input type="text" className="form-control" id="orderNumberInput" placeholder="M123456"
-                    value={data.orderNumber} onChange={e => updateData({ ...data, orderNumber: e.target.value })}/>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="phoneEmailOrPostCodeInput" className="form-label">The Phone, Email, or Post Code associated with the order</label>
-                <input type="text" className="form-control" id="phoneEmailOrPostCodeInput" placeholder="Enter your phone, email, or post code"
-                    value={data.phoneEmailOrPostCode} onChange={e => updateData({ ...data, phoneEmailOrPostCode: e.target.value })}/>
-            </div>
+            <OrderValidationDetailsStep />
         </WizardStep>
     );
 }

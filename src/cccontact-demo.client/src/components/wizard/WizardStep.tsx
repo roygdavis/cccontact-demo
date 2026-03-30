@@ -54,6 +54,20 @@ export interface WizardStepProps {
    * at the Wizard level.
    */
   allowJumpToStep?: boolean;
+
+  /**
+   * When provided, a "Contact Customer Care" escape hatch is shown at the bottom
+   * of the step. The handler is called when the user clicks it — useful for
+   * redirecting to different locations or showing a confirmation popup first.
+   */
+  onContactCustomerCare?: () => void;
+
+  /**
+   * Controls how the escape hatch is rendered.
+   *  - `'link'`   → faint blue underlined text (default, low visual weight).
+   *  - `'button'` → solid primary CTA button (higher visual emphasis).
+   */
+  contactCareVariant?: 'link' | 'button';
 }
 
 // ---------------------------------------------------------------------------
@@ -99,6 +113,8 @@ export function WizardStep({
   children,
   showNavigation = true,
   allowJumpToStep = true,
+  onContactCustomerCare,
+  contactCareVariant = 'link',
 }: WizardStepProps) {
   const {
     currentStep,
@@ -284,6 +300,27 @@ export function WizardStep({
           >
             {isValidating ? '…' : isLastStep ? finishLabel : `${nextLabel} →`}
           </button>
+        </div>
+      )}
+
+      {/* ── Contact Customer Care escape hatch ─────────────────────────── */}
+      {onContactCustomerCare && (
+        <div className="d-flex justify-content-center pt-2">
+          {contactCareVariant === 'button' ? (
+            <button
+              className="btn btn-primary"
+              onClick={onContactCustomerCare}
+            >
+              Contact Customer Care
+            </button>
+          ) : (
+            <button
+              className="btn btn-link text-primary opacity-25 small p-0 text-decoration-underline"
+              onClick={onContactCustomerCare}
+            >
+              Contact Customer Care
+            </button>
+          )}
         </div>
       )}
     </div>
