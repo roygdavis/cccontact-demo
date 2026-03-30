@@ -1,4 +1,4 @@
-import type { MyData } from "../../App";
+import type { MyData } from "../../types";
 import { useWizard, WizardStep } from "../Wizard";
 
 export function PlanStep() {

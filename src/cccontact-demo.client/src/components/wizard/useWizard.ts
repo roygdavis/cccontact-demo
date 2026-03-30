@@ -1,5 +1,6 @@
 import { useContext } from 'react';
-import { WizardContext, WizardContextValue } from './WizardContext';
+import { WizardContext } from './WizardContext';
+import type { WizardContextValue } from './WizardContext';
 
 /**
  * Access the wizard context from within a WizardStep.
