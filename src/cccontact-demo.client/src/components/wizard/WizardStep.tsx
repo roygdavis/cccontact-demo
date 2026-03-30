@@ -167,9 +167,9 @@ export function WizardStep({
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="wizard-step">
+    <div className="d-flex flex-column gap-3 p-4">
       {/* ── Progress bullets ───────────────────────────────────────────── */}
-      <nav className="wizard-progress" aria-label="Wizard progress">
+      <nav className="d-flex align-items-start justify-content-center" aria-label="Wizard progress">
         {Array.from({ length: totalSteps }, (_, i) => {
           const state = getBulletState(i);
           const clickable = isClickable(i);
@@ -178,7 +178,7 @@ export function WizardStep({
           return (
             <React.Fragment key={i}>
               <div
-                className={`wizard-progress__bullet wizard-progress__bullet--${state}`}
+                className={`wizard-progress__bullet wizard-progress__bullet--${state} d-flex flex-column align-items-center`}
                 role="listitem"
               >
                 <button
@@ -239,28 +239,28 @@ export function WizardStep({
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       {(title || description) && (
-        <header className="wizard-step__header">
-          {title && <h2 className="wizard-step__title">{title}</h2>}
-          {description && <p className="wizard-step__description">{description}</p>}
+        <header>
+          {title && <h2 className="h4 fw-bold mb-1">{title}</h2>}
+          {description && <p className="text-muted small mb-0">{description}</p>}
         </header>
       )}
 
       {/* ── Content ────────────────────────────────────────────────────── */}
-      <div className="wizard-step__content">{children}</div>
+      <div className="flex-grow-1">{children}</div>
 
       {/* ── Validation error ────────────────────────────────────────────── */}
       {error && (
-        <p className="wizard-step__error" role="alert">
+        <div className="alert alert-danger py-2 px-3 small mb-0" role="alert">
           {error}
-        </p>
+        </div>
       )}
 
       {/* ── Navigation ─────────────────────────────────────────────────── */}
       {showNavigation && (
-        <div className="wizard-step__navigation">
+        <div className="d-flex align-items-center justify-content-between pt-3 border-top">
           {!isFirstStep && allowBackNavigation ? (
             <button
-              className="wizard-btn wizard-btn--back"
+              className="btn btn-outline-secondary btn-sm"
               onClick={prevStep}
               disabled={isTransitioning || isValidating}
               aria-label="Go to previous step"
@@ -272,18 +272,12 @@ export function WizardStep({
             <span aria-hidden="true" />
           )}
 
-          <span className="wizard-step__step-counter" aria-live="polite">
+          <span className="text-muted small opacity-50" aria-live="polite">
             {currentStep + 1} / {totalSteps}
           </span>
 
           <button
-            className={[
-              'wizard-btn',
-              'wizard-btn--next',
-              isLastStep ? 'wizard-btn--finish' : '',
-            ]
-              .join(' ')
-              .trim()}
+            className={isLastStep ? 'btn btn-success btn-sm' : 'btn btn-primary btn-sm'}
             onClick={handleNext}
             disabled={isTransitioning || isValidating}
             aria-label={isLastStep ? finishLabel : nextLabel}

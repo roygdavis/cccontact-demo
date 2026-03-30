@@ -1,21 +1,193 @@
 /* ==========================================================================
    Wizard — component styles
-   All colours are driven by CSS custom properties so the wizard can be
-   re-themed by overriding them on any ancestor element.
+   Layout, spacing, typography, buttons and colours are handled by Bootstrap.
+   Only the slide animations and bullet progress indicator (which have no
+   Bootstrap equivalents) are defined here.
    ========================================================================== */
 
-/* ── Design tokens ─────────────────────────────────────────────────────────── */
 :root {
-  --wizard-primary:         #6366f1;   /* indigo-500                          */
-  --wizard-primary-dark:    #4f46e5;   /* indigo-600, used on hover           */
-  --wizard-primary-glow:    rgba(99, 102, 241, 0.28);
-  --wizard-success:         #10b981;   /* emerald-500, finish button          */
-  --wizard-success-dark:    #059669;   /* emerald-600                         */
-  --wizard-error:           #ef4444;
-  --wizard-error-bg:        rgba(239, 68, 68, 0.08);
-  --wizard-muted:           #6b7280;
-  --wizard-divider:         rgba(0, 0, 0, 0.08);
   --wizard-animation-duration: 350ms; /* fallback; overridden inline by Wizard */
+}
+
+/* ── Slide container ───────────────────────────────────────────────────────── */
+.wizard__slide-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.wizard__slide {
+  width: 100%;
+}
+
+/* Exiting slide: absolute so it overlays without pushing layout */
+.wizard__slide--exit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Enter / exit animation classes ───────────────────────────────────────── */
+.wizard__slide--enter-forward {
+  animation: wizardSlideInRight var(--wizard-animation-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.wizard__slide--enter-backward {
+  animation: wizardSlideInLeft var(--wizard-animation-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.wizard__slide--exit-forward {
+  animation: wizardSlideOutLeft var(--wizard-animation-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.wizard__slide--exit-backward {
+  animation: wizardSlideOutRight var(--wizard-animation-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes wizardSlideInRight {
+  from { transform: translateX(56px);  opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@keyframes wizardSlideInLeft {
+  from { transform: translateX(-56px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@keyframes wizardSlideOutLeft {
+  from { transform: translateX(0);     opacity: 1; }
+  to   { transform: translateX(-56px); opacity: 0; }
+}
+@keyframes wizardSlideOutRight {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(56px); opacity: 0; }
+}
+
+/* ── Bullet progress indicator ─────────────────────────────────────────────── */
+/* Bootstrap has no equivalent for custom dot-based step progress.             */
+
+.wizard-progress__connector {
+  flex: 1;
+  max-width: 3rem;
+  height: 2px;
+  margin-top: 14px; /* vertically centres with the 12px dot + 5px button padding */
+  background-color: var(--bs-primary);
+  opacity: 0.18;
+  border-radius: 1px;
+  transition: opacity 400ms ease;
+}
+.wizard-progress__connector--completed {
+  opacity: 0.55;
+}
+
+.wizard-progress__bullet {
+  gap: 0.4rem; /* tighter than Bootstrap's gap-1 (0.25rem) or gap-2 (0.5rem) */
+}
+
+/* Reset <button> — we do NOT want Bootstrap .btn styles on the dot trigger */
+.wizard-progress__bullet-btn {
+  padding: 5px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  line-height: 0;
+  cursor: default;
+  transition: background 200ms ease;
+  outline-offset: 2px;
+}
+.wizard-progress__bullet-btn:not(:disabled) {
+  cursor: pointer;
+}
+.wizard-progress__bullet-btn:not(:disabled):hover {
+  background: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.18);
+}
+.wizard-progress__bullet-btn:focus-visible {
+  outline: 2px solid var(--bs-primary, #0d6efd);
+}
+
+.wizard-progress__bullet-dot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--bs-primary, #0d6efd);
+  align-items: center;
+  justify-content: center;
+  transition:
+    width      250ms ease,
+    height     250ms ease,
+    opacity    250ms ease,
+    box-shadow 250ms ease;
+}
+
+/* Current */
+.wizard-progress__bullet--current .wizard-progress__bullet-dot {
+  width: 16px;
+  height: 16px;
+  opacity: 1;
+  box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb, 13, 110, 253), 0.28);
+}
+
+/* Completed */
+.wizard-progress__bullet--completed .wizard-progress__bullet-dot {
+  opacity: 0.72;
+}
+
+/* Upcoming */
+.wizard-progress__bullet--upcoming .wizard-progress__bullet-dot {
+  opacity: 0.2;
+}
+
+/* Pulsing ring on the active step */
+.wizard-progress__bullet-pulse {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid var(--bs-primary, #0d6efd);
+  opacity: 0.35;
+  animation: wizardBulletPulse 2s ease-in-out infinite;
+}
+
+@keyframes wizardBulletPulse {
+  0%,  100% { transform: scale(1);    opacity: 0.35; }
+  50%       { transform: scale(1.45); opacity: 0.05; }
+}
+
+/* Checkmark SVG inside completed dots */
+.wizard-progress__checkmark {
+  width: 8px;
+  height: 8px;
+  color: #fff;
+}
+
+/* Step labels beneath each bullet */
+.wizard-progress__label {
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--bs-secondary-color, #6c757d);
+  opacity: 0.38;
+  pointer-events: none;
+  transition: opacity 300ms ease, font-weight 200ms;
+}
+.wizard-progress__bullet--current   .wizard-progress__label { opacity: 1;    font-weight: 600; color: var(--bs-primary, #0d6efd); }
+.wizard-progress__bullet--completed .wizard-progress__label { opacity: 0.62; }
+
+/* ── Reduced-motion overrides ───────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .wizard__slide--enter-forward,
+  .wizard__slide--enter-backward,
+  .wizard__slide--exit-forward,
+  .wizard__slide--exit-backward {
+    animation: none;
+  }
+
+  .wizard-progress__bullet-pulse {
+    animation: none;
+  }
+
+  .wizard-progress__bullet-dot,
+  .wizard-progress__connector,
+  .wizard-progress__label {
+    transition: none;
+  }
 }
 
 /* ── Outer wrapper ─────────────────────────────────────────────────────────── */
@@ -146,7 +318,7 @@
 }
 
 .wizard-progress__bullet-btn:focus-visible {
-  outline: 2px solid var(--wizard-primary);
+  outline: 2px solid var(--bs-primary, #0d6efd);
 }
 
 /* ── The dot ────────────────────────────────────────────────────────────────── */
@@ -155,7 +327,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: var(--wizard-primary);
+  background-color: var(--bs-primary, #0d6efd);
   display: flex;
   align-items: center;
   justify-content: center;

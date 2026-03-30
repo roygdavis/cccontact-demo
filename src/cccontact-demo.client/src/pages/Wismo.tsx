@@ -13,7 +13,7 @@ export const Wismo = () => {
     
     return (
     <Wizard<WismoData>
-        initialData={{ orderNumber: '', phoneEmailOrPostCode: '' }}
+        initialData={{ orderNumber: '', phoneEmailOrPostCode: '', shippingStatus: undefined }}
         stepLabels={['Order number', 'Shipping status']}
         onComplete={(data) => console.log('Finished', data)}
         onStepChange={handleStepChange}
